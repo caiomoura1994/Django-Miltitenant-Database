@@ -1,0 +1,26 @@
+version: "3.1"
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: "mypassword"
+      POSTGRES_USER: "myuser"
+      POSTGRES_DB: "core"
+
+  web:
+    build: .
+    restart: always
+    command: python3 manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    env_file:
+      - env_DEV
+    ports:
+      - "8000:8000"
+      - "3500:3500"
+    depends_on:
+      - "db"
+    links:
+      - db

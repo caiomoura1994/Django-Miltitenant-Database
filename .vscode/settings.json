@@ -1,0 +1,8 @@
+{
+  "python.autoComplete.extraPaths": [".", "./lib"],
+  "python.analysis.extraPaths": [".", "./lib"],
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  }
+}

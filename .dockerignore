@@ -1,0 +1,4 @@
+mysql_data
+.git
+.env.*
+Docker*
