@@ -1,3 +1,6 @@
+import json
+from unittest.mock import patch
+
 from core.test_setup import InitCreateUser
 from rest_framework import status
 
@@ -24,6 +27,13 @@ class ProfileAccount(InitCreateUser):
         self.assertContains(response=response, text="token", status_code=201)
 
     def test_get_my_profile(self):
+        response_without_auth = self.client.get("/my-profile/")
+        self.assertContains(
+            response=response_without_auth,
+            text="",
+            status_code=status.HTTP_204_NO_CONTENT
+        )
+
         self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
         response = self.client.get("/my-profile/")
         self.assertContains(response=response, text="id")
@@ -37,3 +47,62 @@ class ProfileAccount(InitCreateUser):
             },
         )
         self.assertContains(response=response, text="token")
+
+    @patch('profile.views.send_user_support_message')
+    def test_send_support_message(self, send_user_support_message):
+        data = json.dumps({
+            "full_name": "full_name",
+            "email": "email",
+            "telephone": "telephone",
+            "subject": "subject",
+            "message": "message"
+        })
+        send_user_support_message.return_value = True
+        response = self.client.post(
+            "/contact-us/",
+            data=data,
+            content_type="application/json"
+        )
+        self.assertContains(
+            response=response,
+            text="",
+            status_code=status.HTTP_204_NO_CONTENT
+        )
+
+        send_user_support_message.return_value = False
+        response = self.client.post(
+            "/contact-us/",
+            data=data,
+            content_type="application/json"
+        )
+        self.assertContains(
+            response=response,
+            text="",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
+
+    def test_check_user_name(self):
+        response = self.client.post(
+            "/check-username/",
+            data={"username": "naoexiste@gmail.com"}
+        )
+        self.assertContains(
+            response=response,
+            text="",
+            status_code=status.HTTP_404_NOT_FOUND
+        )
+        response = self.client.post(
+            "/check-username/",
+            data={"username": "melquiades@gmail.com"}
+        )
+        self.assertContains(
+            response=response,
+            text="",
+            status_code=status.HTTP_200_OK
+        )
+        response = self.client.post("/check-username/", data={})
+        self.assertContains(
+            response=response,
+            text="",
+            status_code=status.HTTP_400_BAD_REQUEST
+        )

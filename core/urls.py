@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from profile.views import (CustomAuthToken, ProfileViewSet,
-                           UserChangePasswordViewSet,
+                           UserChangePasswordViewSet, UserCheckUsernameViewSet,
                            UserForgotPasswordViewSet, my_profile,
                            send_support_message)
 
@@ -33,6 +33,8 @@ urlpatterns = [
     url(r'^contact-us/', send_support_message),
     url(r'^my-profile/', my_profile),
     url(r'^api-token-auth/', CustomAuthToken.as_view()),
+    url(r'^check-username/',
+        UserCheckUsernameViewSet.as_view({'post': 'create'})),
     url(r'profile/change_password/',
         UserChangePasswordViewSet.as_view({'post': 'create'}), name='user-change-password'),
     url(r'profile/forgot_password/',
