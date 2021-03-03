@@ -26,6 +26,13 @@ class ProfileAccount(InitCreateUser):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertContains(response=response, text="token", status_code=201)
 
+        response = self.client.post(
+            "/profile/",
+            data=payload,
+            format="json"
+        )
+        self.assertContains(response=response, text="", status_code=400)
+
     def test_get_my_profile(self):
         response_without_auth = self.client.get("/my-profile/")
         self.assertContains(
