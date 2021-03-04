@@ -1,8 +1,8 @@
-from django.conf.urls import url
+from django.urls import path
 
 from integrations.views import RDZapeiIntegrarion
 
 urlpatterns = [
-    url(r'rd-zapei/(?P<url_sufix>[a-z]+)',
-        RDZapeiIntegrarion.as_view({'post': 'create'}))
+    path('rd-zapei/<url_sufix>/',
+         RDZapeiIntegrarion.as_view({'post': 'create'}))
 ]
