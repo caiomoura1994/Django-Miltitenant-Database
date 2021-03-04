@@ -16,11 +16,11 @@ class IntegrationsTest(APITestCase):
             }]
         })
         integration = RdStationZapei.objects.create(
-            url_sufix="zapei",
-            token_zapei="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Ikpvc2UgUm9iZXJ0byBBbG1laWRhIiwicm9sZSI6IlB1YmxpY1VzZXIiLCJwcmltYXJ5c2lkIjoiMzg4NiIsImNlcnRzZXJpYWxudW1iZXIiOiI4Njk5ODc0MC1hODI1LTQzMWMtYTUyYi1iYjZkNDcwNzhjNDIiLCJhdXRobWV0aG9kIjoiSldUIiwiaHR0cDovL3NjaGVtYXMueG1sc29hcC5vcmcvd3MvMjAwNS8wNS9pZGVudGl0eS9jbGFpbXMvY291bnRyeSI6IkludmFyaWFudCBDb3VudHJ5IiwiZ3JvdXBzaWQiOiIyMDU3IiwibmJmIjoxNjE0NTQ3NjM2LCJleHAiOjE2MzAwOTk2MzYsImlhdCI6MTYxNDU0NzYzNiwiaXNzIjoiemFwZmFjaWwtYXBpIiwiYXVkIjoiemFwZmFjaWwtY2xpZW50cyJ9.itdOtJ6NBirhFFGB-BQhOUzGXanJuoKB8ymZ1ERtdVw",
+            url_sufix="zapei-test-testando",
+            token_zapei="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkNhaW8gTW91cmEiLCJyb2xlIjoiUHVibGljVXNlciIsInByaW1hcnlzaWQiOiIxNjIzIiwiY2VydHNlcmlhbG51bWJlciI6IjZmYTY4YTJhLTJjZTUtNDA3Zi05YmEzLWI4YTNhMTI3YWZhYyIsImF1dGhtZXRob2QiOiJKV1QiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9jb3VudHJ5IjoiSW52YXJpYW50IENvdW50cnkiLCJncm91cHNpZCI6IjI1NDciLCJuYmYiOjE2MTQ4MzEyMzUsImV4cCI6MTYzMDM4MzIzNSwiaWF0IjoxNjE0ODMxMjM1LCJpc3MiOiJ6YXBmYWNpbC1hcGkiLCJhdWQiOiJ6YXBmYWNpbC1jbGllbnRzIn0.olKuR0xrw4Ff9yJKFLGKP3AvOiolf4RWmZjCZuLGtIk",
         )
         response = self.client.post(
-            f"/integracao/{integration.url_sufix}/",
+            f"/integrations/rd-zapei/{integration.url_sufix}/",
             data=data,
             content_type="application/json"
         )
