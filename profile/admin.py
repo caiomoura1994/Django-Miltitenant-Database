@@ -3,7 +3,7 @@ from django.contrib import admin
 
 from .models import Profile
 
-admin.site.site_header = "Zapei Loja Admin"
+admin.site.site_header = "Zapei Admin"
 
 
 class CSSAdminMixin(object):
