@@ -13,8 +13,8 @@ class RdStationZapei(models.Model):
     )
 
     class Meta:
-        verbose_name = "Integração"
-        verbose_name_plural = "Integrações"
+        verbose_name = "Integração RdStationZapei"
+        verbose_name_plural = "Integrações RdStationZapei"
 
     def __str__(self):
         return self.url_sufix
