@@ -1,5 +1,5 @@
 from django.contrib import admin
 
-from .models import IntegrationData
+from .models import RdStationZapei
 
-admin.site.register(IntegrationData)
+admin.site.register(RdStationZapei)

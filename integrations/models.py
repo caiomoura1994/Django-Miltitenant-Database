@@ -1,7 +1,7 @@
 from django.db import models
 
 
-class IntegrationData(models.Model):
+class RdStationZapei(models.Model):
     url_sufix = models.CharField(
         max_length=100,
         verbose_name='Sufixo do cliente',

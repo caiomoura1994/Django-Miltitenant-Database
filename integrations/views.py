@@ -6,7 +6,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from integrations.models import IntegrationData
+from integrations.models import RdStationZapei
 
 
 @api_view(['POST'])
@@ -18,7 +18,7 @@ def zapei_integration(request, url_sufix=None):
         email = lead['email']
         name = lead['name']
         personal_phone = re.sub('\W+', '', lead['personal_phone'])
-        integration: IntegrationData = IntegrationData.objects.get(
+        integration: RdStationZapei = RdStationZapei.objects.get(
             url_sufix=url_sufix
         )
         ZAPEI_HEADERS = {
