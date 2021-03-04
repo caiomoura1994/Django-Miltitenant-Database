@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'tinymce',
 
     'profile',
+    'integrations',
 ]
 
 MIDDLEWARE = [
