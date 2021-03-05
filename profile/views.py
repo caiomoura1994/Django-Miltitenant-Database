@@ -1,5 +1,5 @@
 import json
-from profile.models import Profile
+from profile.models import Client
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -12,7 +12,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 
-from .serializers import ProfileSerializer, RegisterSerializer
+from .serializers import ClientSerializer, RegisterSerializer
 from .utils import (generate_random_password, is_valid_password,
                     send_user_new_password_message, send_user_support_message)
 
@@ -21,8 +21,8 @@ from .utils import (generate_random_password, is_valid_password,
 def my_profile(request):
     if not request.user.is_authenticated:
         return Response(status=status.HTTP_204_NO_CONTENT)
-    profile = Profile.objects.get(user=request.user)
-    serializer = ProfileSerializer(profile)
+    client = Client.objects.get(user=request.user)
+    serializer = ClientSerializer(client)
     return Response(status=status.HTTP_200_OK,  data=serializer.data)
 
 
@@ -113,7 +113,7 @@ class UserForgotPasswordViewSet(viewsets.ViewSet):
         user.set_password(new_password)
         user.save()
         send_user_new_password_message(
-            Profile.objects.get(user=user), new_password)
+            Client.objects.get(user=user), new_password)
         return Response('Nova senha enviada para {}.'.format(request.data['username']), status=200)
 
 
@@ -132,8 +132,8 @@ class UserCheckUsernameViewSet(viewsets.ViewSet):
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
-    queryset = Profile.objects.all()
-    serializer_class = ProfileSerializer
+    queryset = Client.objects.all()
+    serializer_class = ClientSerializer
 
     def get_permissions(self):
         if self.request.method == 'POST':
@@ -147,7 +147,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             data = serializer.data
-            new_profile = Profile.objects.get(
+            new_profile = Client.objects.get(
                 user__email=data["email"]
             )
             token, created = Token.objects.get_or_create(

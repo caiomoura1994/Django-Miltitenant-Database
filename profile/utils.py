@@ -248,23 +248,6 @@ def random_string_generator(size=10, chars=string.ascii_lowercase + string.digit
     return ''.join(random.choice(chars) for _ in range(size))
 
 
-def generate_slug(instance, new_slug=None):
-    if new_slug is not None:
-        slug = new_slug
-    else:
-        slug = slugify(instance.establishment_name)
-
-    Klass = instance.__class__
-    qs_exists = Klass.objects.filter(slug=slug).exists()
-    if qs_exists:
-        new_slug = "{slug}-{randstr}".format(
-            slug=slug,
-            randstr=random_string_generator(size=4)
-        )
-        return generate_slug(instance, new_slug=new_slug)
-    return slug
-
-
 def is_valid_password(password, confirm_password):
     if password != confirm_password:
         return False

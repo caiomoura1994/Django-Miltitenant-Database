@@ -46,6 +46,7 @@ INSTALLED_APPS = [
 
     'profile',
     'integrations',
+    'store',
 ]
 
 MIDDLEWARE = [

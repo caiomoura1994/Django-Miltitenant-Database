@@ -1,8 +1,9 @@
-from profile.models import Profile
+from profile.models import Client
 
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
+from store.models import Store
 
 
 class InitCreateUser(APITestCase):
@@ -12,10 +13,13 @@ class InitCreateUser(APITestCase):
             'melquiades@gmail.com',
             'melquiades@gmail.com'
         )
-        self.profile = Profile.objects.create(
+        self.client_instance = Client.objects.create(
             user=self.user,
-            establishment_name="establishment_name",
             tax_document="00000000000",
+        )
+        self.store = Store.objects.create(
+            client=self.client_instance,
+            establishment_name="establishment_name",
             description="description",
             is_active=True,
             can_pick_up_in_store=True,

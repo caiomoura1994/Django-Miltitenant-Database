@@ -10,9 +10,11 @@ class ProfileAccount(InitCreateUser):
         payload = {
             "email": "email@gmacdil.com",
             "password": "Pass24cd.",
-            "profile": {
-                "establishment_name": "Nome do estabelecimento",
+            "client": {
                 "tax_document": "02308244550",
+            },
+            "store": {
+                "establishment_name": "Nome do estabelecimento",
                 "description": "Descricao do estabelecimento",
                 "is_active": False,
                 "can_pick_up_in_store": True
