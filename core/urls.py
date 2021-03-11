@@ -19,10 +19,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from rest_framework import routers
+from rest_framework.documentation import include_docs_urls
 
 router = routers.DefaultRouter()
 
 urlpatterns = [
+    path('docs/', include_docs_urls(title='Zapei Docs')),
     url(r'^', include('profile.urls')),
     url(r'^integrations/', include('integrations.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),

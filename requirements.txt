@@ -11,3 +11,4 @@ google-cloud-storage
 django-storages
 Pillow
 coverage
+coreapi

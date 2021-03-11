@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-class Client(models.Model):
+class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     tax_document = models.CharField(max_length=100, verbose_name='CPF ou CNPJ')
     created_at = models.DateTimeField(auto_now_add=True)

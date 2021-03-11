@@ -1,4 +1,4 @@
-from profile.models import Client
+from profile.models import Profile
 
 from core.utils import generate_slug
 from django.db import models
@@ -6,7 +6,11 @@ from django.utils.html import format_html
 
 
 class Store(models.Model):
-    client = models.OneToOneField(Client, on_delete=models.CASCADE)
+    profile = models.OneToOneField(
+        Profile,
+        on_delete=models.CASCADE,
+        related_name="stores"
+    )
     establishment_name = models.CharField(max_length=100)
     description = models.CharField(max_length=100, verbose_name='Descrição')
     photo = models.CharField(max_length=256, null=True, blank=True)
@@ -40,7 +44,7 @@ class Store(models.Model):
 
 class Category(models.Model):
     name = models.CharField(max_length=100)
-    store = models.OneToOneField(Store, on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -49,7 +53,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    store = models.OneToOneField(Store, on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category)
     price = models.DecimalField(decimal_places=2, max_digits=30)
     name = models.CharField(max_length=100)
@@ -85,7 +89,7 @@ class Product(models.Model):
 
 
 class Address(models.Model):
-    store = models.OneToOneField(Store, on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
     zip_code = models.CharField(max_length=100)
     public_place = models.CharField(max_length=100)
     neighborhood = models.CharField(max_length=100)
@@ -96,7 +100,7 @@ class Address(models.Model):
 
 
 class OpeningHour(models.Model):
-    store = models.OneToOneField(Store, on_delete=models.CASCADE)
+    store = models.ForeignKey(Store, on_delete=models.CASCADE)
     start_hour = models.CharField(max_length=100)
     end_hour = models.CharField(max_length=100)
     day_of_week = models.CharField(max_length=100)

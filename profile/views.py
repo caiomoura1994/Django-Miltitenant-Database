@@ -1,9 +1,9 @@
 import json
-from profile.models import Client
+from profile.models import Profile
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-from rest_framework import status, viewsets
+from rest_framework import mixins, status, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import api_view
@@ -11,8 +11,10 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
+from store.models import Store
 
-from .serializers import ClientSerializer, RegisterSerializer
+from .serializers import (ProfileSerializer, RegisterProfileSerializer,
+                          UpdateProfileSerializer)
 from .utils import (generate_random_password, is_valid_password,
                     send_user_new_password_message, send_user_support_message)
 
@@ -21,8 +23,8 @@ from .utils import (generate_random_password, is_valid_password,
 def my_profile(request):
     if not request.user.is_authenticated:
         return Response(status=status.HTTP_204_NO_CONTENT)
-    client = Client.objects.get(user=request.user)
-    serializer = ClientSerializer(client)
+    profile = Profile.objects.get(user=request.user)
+    serializer = ProfileSerializer(profile)
     return Response(status=status.HTTP_200_OK,  data=serializer.data)
 
 
@@ -113,7 +115,7 @@ class UserForgotPasswordViewSet(viewsets.ViewSet):
         user.set_password(new_password)
         user.save()
         send_user_new_password_message(
-            Client.objects.get(user=user), new_password)
+            Profile.objects.get(user=user), new_password)
         return Response('Nova senha enviada para {}.'.format(request.data['username']), status=200)
 
 
@@ -131,23 +133,32 @@ class UserCheckUsernameViewSet(viewsets.ViewSet):
         return Response('E-mail informado JÁ está cadastrado.', status=200)
 
 
-class ProfileViewSet(viewsets.ModelViewSet):
-    queryset = Client.objects.all()
-    serializer_class = ClientSerializer
+class ProfileViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+    queryset = Profile.objects.all()
+    permission_classes = (AllowAny,)
 
-    def get_permissions(self):
-        if self.request.method == 'POST':
-            self.permission_classes = (AllowAny,)
-        else:
-            self.permission_classes = (IsAuthenticated,)
-        return super(ProfileViewSet, self).get_permissions()
+    def get_serializer_class(self):
+        if self.action == 'create':
+            return RegisterProfileSerializer
+        if self.action == 'partial_update':
+            return UpdateProfileSerializer
+        if self.action == 'update':
+            return UpdateProfileSerializer
+        return ProfileSerializer
+
+    # def get_permissions(self):
+    #     if self.request.method == 'POST':
+    #         self.permission_classes = (AllowAny,)
+    #     else:
+    #         self.permission_classes = (IsAuthenticated,)
+    #     return super(ProfileViewSet, self).get_permissions()
 
     def create(self, request, **kwargs):
-        serializer = RegisterSerializer(data=request.data)
+        serializer = RegisterProfileSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             data = serializer.data
-            new_profile = Client.objects.get(
+            new_profile = Profile.objects.get(
                 user__email=data["email"]
             )
             token, created = Token.objects.get_or_create(
@@ -159,3 +170,18 @@ class ProfileViewSet(viewsets.ModelViewSet):
             # send_welcome_message(new_profile.establishment_name, data["email"])
 
         return Response(data, status=status.HTTP_201_CREATED)
+
+    def partial_update(self, request, pk=None):
+        serializer = UpdateProfileSerializer(data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            profile: Profile = Profile.objects.get(pk=pk)
+            print(request.data)
+            for (key, value) in request.data['profile'].items():
+                setattr(profile, key, value)
+            profile.save()
+            # store: Store = profile.stores.first()
+            # print(serializer.validated_data)
+            # for (key, value) in request.data['store'].items():
+            #     setattr(store, key, value)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)

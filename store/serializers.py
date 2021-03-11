@@ -6,7 +6,7 @@ from store.models import Address, Category, OpeningHour, Product, Store
 class StoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = Store
-        exclude = ('client', )
+        exclude = ('profile', )
 
 
 class CategorySerializer(serializers.ModelSerializer):

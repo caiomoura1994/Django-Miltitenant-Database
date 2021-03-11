@@ -1,8 +1,10 @@
 import json
+from profile.models import Profile
 from unittest.mock import patch
 
 from core.test_setup import InitCreateUser
 from rest_framework import status
+from store.models import Store
 
 
 class ProfileAccount(InitCreateUser):
@@ -10,7 +12,7 @@ class ProfileAccount(InitCreateUser):
         payload = {
             "email": "email@gmacdil.com",
             "password": "Pass24cd.",
-            "client": {
+            "profile": {
                 "tax_document": "02308244550",
             },
             "store": {
@@ -34,6 +36,29 @@ class ProfileAccount(InitCreateUser):
             format="json"
         )
         self.assertContains(response=response, text="", status_code=400)
+
+    def test_update_profile(self):
+        payload = {
+            "profile": {
+                "tax_document": "0230824455"
+            },
+            # "store": {
+            #     "establishment_name": "novo nome"
+            # },
+        }
+
+        response = self.client.patch(
+            f"/profile/{self.profile_instance.pk}/",
+            data=payload,
+            format="json"
+        )
+        profile: Profile = Profile.objects.get(pk=self.profile_instance.pk)
+        # store: Store = profile.stores.first()
+        # print(store)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, "0230824455")
+        self.assertEqual(profile.tax_document, "0230824455")
+        # self.assertEqual(store.establishment_name, "novo nome")
 
     def test_get_my_profile(self):
         response_without_auth = self.client.get("/my-profile/")

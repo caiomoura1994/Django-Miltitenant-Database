@@ -1,4 +1,4 @@
-from profile.models import Client
+from profile.models import Profile
 
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
@@ -13,12 +13,12 @@ class InitCreateUser(APITestCase):
             'melquiades@gmail.com',
             'melquiades@gmail.com'
         )
-        self.client_instance = Client.objects.create(
+        self.profile_instance = Profile.objects.create(
             user=self.user,
             tax_document="00000000000",
         )
         self.store = Store.objects.create(
-            client=self.client_instance,
+            profile=self.profile_instance,
             establishment_name="establishment_name",
             description="description",
             is_active=True,

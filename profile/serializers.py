@@ -5,15 +5,15 @@ from rest_framework.serializers import ValidationError
 from store.models import Store
 from store.serializers import StoreSerializer
 
-from .models import Client
+from .models import Profile
 
 
-class ClientSerializer(serializers.ModelSerializer):
+class ProfileSerializer(serializers.ModelSerializer):
 
     email = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
-        model = Client
+        model = Profile
         depth = 1
         exclude = ('user', )
 
@@ -24,13 +24,11 @@ class ClientSerializer(serializers.ModelSerializer):
             return None
 
 
-class RegisterSerializer(serializers.ModelSerializer):
-    client = ClientSerializer(required=True)
+class RegisterProfileSerializer(serializers.Serializer):
+    profile = ProfileSerializer(required=True)
     store = StoreSerializer(required=True)
-
-    class Meta:
-        model = User
-        fields = ("email", "password", "client", "store")
+    email = serializers.EmailField()
+    password = serializers.CharField()
 
     def create(_, validated_data):
         email = validated_data['email']
@@ -41,13 +39,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         user = User(email=email, username=email)
         user.set_password(password)
         user.save()
-        client_data = validated_data['client']
+        profile_data = validated_data['profile']
         store_data = validated_data['store']
-        client: Client = Client.objects.create(user=user, **client_data)
-        store: Store = Store.objects.create(client=client, **store_data)
+        profile: Profile = Profile.objects.create(user=user, **profile_data)
+        store: Store = Store.objects.create(profile=profile, **store_data)
         store.slug = generate_slug(store)
         validated_data['store']['slug'] = store.slug
         validated_data['password'] = None
         store.save()
-        client.save()
+        profile.save()
         return validated_data
+
+
+class UpdateProfileSerializer(serializers.Serializer):
+    profile = ProfileSerializer(required=False)
+    store = StoreSerializer(required=False)

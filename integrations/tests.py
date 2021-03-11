@@ -1,4 +1,5 @@
 import json
+from unittest.mock import patch
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -7,7 +8,9 @@ from integrations.models import RdStationZapei
 
 
 class IntegrationsTest(APITestCase):
-    def test_zapei_integration(self):
+    @patch('requests.post')
+    def test_zapei_integration(self, post):
+        post.return_value = True
         data = json.dumps({
             "leads": [{
                 "email": "email@gmail.com",
