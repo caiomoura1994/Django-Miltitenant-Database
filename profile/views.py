@@ -13,8 +13,8 @@ from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
 from store.models import Store
 
-from .serializers import (ProfileSerializer, RegisterProfileSerializer,
-                          UpdateProfileSerializer)
+from .serializers import (CheckUsernameProfileSerializer, ProfileSerializer,
+                          RegisterProfileSerializer, UpdateProfileSerializer)
 from .utils import (generate_random_password, is_valid_password,
                     send_user_new_password_message, send_user_support_message)
 
@@ -119,17 +119,19 @@ class UserForgotPasswordViewSet(viewsets.ViewSet):
         return Response('Nova senha enviada para {}.'.format(request.data['username']), status=200)
 
 
-class UserCheckUsernameViewSet(viewsets.ViewSet):
-
+class UserCheckUsernameViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     permission_classes = (AllowAny,)
 
+    def get_serializer_class(self):
+        return CheckUsernameProfileSerializer
+
     def create(self, request):
-        if not 'username' in request.data:
+        if not 'email' in request.data:
             raise ValidationError('Email não informado.', 400)
         try:
-            User.objects.get(username__exact=request.data['username'])
+            User.objects.get(username__exact=request.data['email'])
         except ObjectDoesNotExist:
-            raise NotFound('E-mail informado NÃO está cadastrado.')
+            raise NotFound('E-mail informado não está cadastrado.')
         return Response('E-mail informado JÁ está cadastrado.', status=200)
 
 
@@ -175,7 +177,6 @@ class ProfileViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
         serializer = UpdateProfileSerializer(data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             profile: Profile = Profile.objects.get(pk=pk)
-            print(request.data)
             for (key, value) in request.data['profile'].items():
                 setattr(profile, key, value)
             profile.save()

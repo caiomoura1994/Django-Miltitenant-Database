@@ -116,7 +116,7 @@ class ProfileAccount(InitCreateUser):
     def test_check_user_name(self):
         response = self.client.post(
             "/check-username/",
-            data={"username": "naoexiste@gmail.com"}
+            data={"email": "naoexiste@gmail.com"}
         )
         self.assertContains(
             response=response,
@@ -125,7 +125,7 @@ class ProfileAccount(InitCreateUser):
         )
         response = self.client.post(
             "/check-username/",
-            data={"username": "melquiades@gmail.com"}
+            data={"email": "melquiades@gmail.com"}
         )
         self.assertContains(
             response=response,

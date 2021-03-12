@@ -51,6 +51,10 @@ class RegisterProfileSerializer(serializers.Serializer):
         return validated_data
 
 
+class CheckUsernameProfileSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
 class UpdateProfileSerializer(serializers.Serializer):
     profile = ProfileSerializer(required=False)
     store = StoreSerializer(required=False)
