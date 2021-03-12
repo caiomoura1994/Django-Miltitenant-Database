@@ -9,7 +9,7 @@ class Store(models.Model):
     profile = models.OneToOneField(
         Profile,
         on_delete=models.CASCADE,
-        related_name="stores"
+        related_name="store"
     )
     establishment_name = models.CharField(max_length=100)
     description = models.CharField(max_length=100, verbose_name='Descrição')

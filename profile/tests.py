@@ -42,9 +42,10 @@ class ProfileAccount(InitCreateUser):
             "profile": {
                 "tax_document": "0230824455"
             },
-            # "store": {
-            #     "establishment_name": "novo nome"
-            # },
+            "store": {
+                "establishment_name": "novo nome",
+                "description": "description",
+            },
         }
 
         response = self.client.patch(
@@ -53,12 +54,9 @@ class ProfileAccount(InitCreateUser):
             format="json"
         )
         profile: Profile = Profile.objects.get(pk=self.profile_instance.pk)
-        # store: Store = profile.stores.first()
-        # print(store)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertContains(response, "0230824455")
         self.assertEqual(profile.tax_document, "0230824455")
-        # self.assertEqual(store.establishment_name, "novo nome")
 
     def test_get_my_profile(self):
         response_without_auth = self.client.get("/my-profile/")

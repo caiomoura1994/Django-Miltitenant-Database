@@ -179,9 +179,8 @@ class ProfileViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
             for (key, value) in request.data['profile'].items():
                 setattr(profile, key, value)
             profile.save()
-            # store: Store = profile.stores.first()
-            # print(serializer.validated_data)
-            # for (key, value) in request.data['store'].items():
-            #     setattr(store, key, value)
+            store: Store = profile.store
+            for (key, value) in request.data['store'].items():
+                setattr(store, key, value)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
