@@ -17,12 +17,12 @@ class InitCreateUser(APITestCase):
             user=self.user,
             tax_document="00000000000",
         )
-        self.store = Store.objects.create(
+        self.store: Store = Store.objects.create(
             profile=self.profile_instance,
-            establishment_name="establishment_name",
+            establishment_name="Establishment Name",
             description="description",
             is_active=True,
             can_pick_up_in_store=True,
-            slug="slug",
+            slug="establishment-name",
         )
         self.token = Token.objects.create(user=self.user)
