@@ -135,9 +135,8 @@ class UserCheckUsernameViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet)
         return Response('E-mail informado JÁ está cadastrado.', status=200)
 
 
-class ProfileViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.ListModelMixin, viewsets.GenericViewSet):
+class ProfileViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = Profile.objects.all()
-    permission_classes = (AllowAny,)
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -148,12 +147,12 @@ class ProfileViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, mixins.Li
             return UpdateProfileSerializer
         return ProfileSerializer
 
-    # def get_permissions(self):
-    #     if self.request.method == 'POST':
-    #         self.permission_classes = (AllowAny,)
-    #     else:
-    #         self.permission_classes = (IsAuthenticated,)
-    #     return super(ProfileViewSet, self).get_permissions()
+    def get_permissions(self):
+        if self.request.method == 'POST':
+            self.permission_classes = (AllowAny,)
+        else:
+            self.permission_classes = (IsAuthenticated,)
+        return super(ProfileViewSet, self).get_permissions()
 
     def create(self, request, **kwargs):
         serializer = RegisterProfileSerializer(data=request.data)

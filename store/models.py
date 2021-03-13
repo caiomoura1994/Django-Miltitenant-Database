@@ -43,8 +43,12 @@ class Store(models.Model):
 
 
 class Category(models.Model):
+    store = models.ForeignKey(
+        Store,
+        on_delete=models.CASCADE,
+        related_name="categories"
+    )
     name = models.CharField(max_length=100)
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -53,7 +57,11 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    store = models.ForeignKey(
+        Store,
+        on_delete=models.CASCADE,
+        related_name="products"
+    )
     categories = models.ManyToManyField(Category)
     price = models.DecimalField(decimal_places=2, max_digits=30)
     name = models.CharField(max_length=100)
@@ -89,7 +97,11 @@ class Product(models.Model):
 
 
 class Address(models.Model):
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    store = models.OneToOneField(
+        Store,
+        on_delete=models.CASCADE,
+        related_name="address"
+    )
     zip_code = models.CharField(max_length=100)
     public_place = models.CharField(max_length=100)
     neighborhood = models.CharField(max_length=100)
@@ -100,7 +112,11 @@ class Address(models.Model):
 
 
 class OpeningHour(models.Model):
-    store = models.ForeignKey(Store, on_delete=models.CASCADE)
+    store = models.ForeignKey(
+        Store,
+        on_delete=models.CASCADE,
+        related_name="openinghours"
+    )
     start_hour = models.CharField(max_length=100)
     end_hour = models.CharField(max_length=100)
     day_of_week = models.CharField(max_length=100)

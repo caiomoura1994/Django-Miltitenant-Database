@@ -25,9 +25,10 @@ router = routers.DefaultRouter()
 
 urlpatterns = [
     path('docs/', include_docs_urls(title='Zapei Docs')),
-    url(r'^', include('profile.urls')),
     url(r'^integrations/', include('integrations.urls')),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('admin/', admin.site.urls),
+    url(r'^', include('profile.urls')),
+    url(r'^', include('store.urls')),
     url(r'^', include(router.urls)),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

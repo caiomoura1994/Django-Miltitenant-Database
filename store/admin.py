@@ -1,39 +1,29 @@
 from django.contrib import admin
 
-from .models import Store
+from .models import Address, OpeningHour, Product, Store
 
-NORMAL_USER_FIELDS = [
-    'establishment_name',
-    'tax_document',
-    'description',
-    'photo',
-    'is_active',
-    'can_pick_up_in_store',
-    'slug',
-]
+
+class ProductInline(admin.StackedInline):
+    model = Product
+    extra = 0
+
+
+class AddressInline(admin.StackedInline):
+    model = Address
+    extra = 0
+
+
+class OpeningHourInline(admin.StackedInline):
+    model = OpeningHour
+    extra = 0
 
 
 class StoreAdmin(admin.ModelAdmin):
-    list_filter = (
-        'establishment_name',
-        'is_active',
-        'slug',
-    )
-    list_display = (
-        'establishment_name',
-        'is_active',
-        'slug',
-    )
-    search_fields = ('establishment_name',)
-
-    # def get_readonly_fields(self, request, obj=None):
-    #     return NORMAL_USER_FIELDS
-
-    def get_fields(self, request, obj=None):
-        new_fields = ['is_active']
-        for field in NORMAL_USER_FIELDS:
-            new_fields.append(field)
-        return new_fields
+    inlines = [
+        ProductInline,
+        AddressInline,
+        OpeningHourInline,
+    ]
 
 
 admin.site.register(Store, StoreAdmin)

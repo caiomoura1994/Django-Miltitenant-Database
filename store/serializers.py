@@ -3,12 +3,6 @@ from rest_framework import serializers
 from store.models import Address, Category, OpeningHour, Product, Store
 
 
-class StoreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Store
-        exclude = ('profile', )
-
-
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -31,3 +25,14 @@ class OpeningHourSerializer(serializers.ModelSerializer):
     class Meta:
         model = OpeningHour
         fields = '__all__'
+
+
+class StoreSerializer(serializers.ModelSerializer):
+    # categories = CategorySerializer(many=True, read_only=True)
+    products = ProductSerializer(many=True, read_only=True)
+    address = AddressSerializer(read_only=True)
+    openinghours = OpeningHourSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Store
+        exclude = ('profile', )

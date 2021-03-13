@@ -9,7 +9,7 @@ from .models import Profile
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-
+    store = StoreSerializer(read_only=True)
     email = serializers.SerializerMethodField(read_only=True)
 
     class Meta:

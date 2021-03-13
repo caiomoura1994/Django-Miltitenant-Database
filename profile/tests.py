@@ -47,7 +47,7 @@ class ProfileAccount(InitCreateUser):
                 "description": "description",
             },
         }
-
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
         response = self.client.patch(
             f"/profile/{self.profile_instance.pk}/",
             data=payload,
