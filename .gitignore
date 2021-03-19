@@ -121,3 +121,4 @@ nosetests.xml
 coverage.xml
 *,cover
 .hypothesis/
+*firebase-credentials.json
