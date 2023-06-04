@@ -1,7 +1,8 @@
 ## Agro na Mesa (Backend)
 
 # Rodando o projeto
-  - Adicione o arquivo `core/firebase-credentials.json` com as configuracoes do google storage
-  - Para subir os containers de web e db use `docker-compose up -d`
-  - O projeto deve estar rodando em `http://0.0.0.0:8080/`
-  - Para entrar no container web use `docker-compose exec web bash`
+  - Add the file `core/firebase-credentials.json` to use googleStorage config
+  - To Up the containers use docker and run `docker-compose up -d`
+  - Your project should be running at `http://0.0.0.0:8080/`
+  - To run any code in container use `docker-compose exec web bash`
+  - To run tests use `docker-compose exec web pythonn manage.py shell`
