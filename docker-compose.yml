@@ -8,6 +8,8 @@ services:
       POSTGRES_PASSWORD: "mypassword"
       POSTGRES_USER: "myuser"
       POSTGRES_DB: "core"
+    ports:
+      - "5432:5432"
 
   web:
     build: .
