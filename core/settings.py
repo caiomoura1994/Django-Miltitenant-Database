@@ -29,27 +29,43 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'storages',
+]
 
-    'rest_framework',
-    'rest_framework.authtoken',
-    'corsheaders',
-    'tinymce',
-
+# web_1  | RuntimeError: Model class django.contrib.contenttypes.models.ContentType doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+PROJECTS_APPS = [
     'profile',
-    'integrations',
     'store',
 ]
 
+THIRD_APPS = [
+    'storages',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
+    'tinymce'
+]
+
+
+TENANT_APPS = THIRD_APPS + DJANGO_APPS + PROJECTS_APPS
+SHARED_APPS = ["tenant_schemas", "customers"]
+
+INSTALLED_APPS = SHARED_APPS+TENANT_APPS
+
+MULTITENANT_TEMPLATE_DIRS = [
+    'tenant_templates'
+]
+
+TENANT_MODEL = "customers.Client"  # app.Model
+
 MIDDLEWARE = [
+    'tenant_schemas.middleware.TenantMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -66,7 +82,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -74,9 +90,20 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            "loaders": [
+                "tenant_schemas.template_loaders.FilesystemLoader",
+                "django.template.loaders.app_directories.Loader",
+            ],
         },
     },
 ]
+
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.core.context_processors.request',
+    # ...
+)
+
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
@@ -86,7 +113,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        "ENGINE": "django.db.backends.postgresql",
+        # "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "tenant_schemas.postgresql_backend",
         'HOST': os.getenv('DATABASE_HOST'),
         'PORT': os.getenv('DATABASE_PORT'),
         'USER': os.getenv('DATABASE_USER'),
@@ -95,6 +123,9 @@ DATABASES = {
     }
 }
 
+DATABASE_ROUTERS = (
+    'tenant_schemas.routers.TenantSyncRouter',
+)
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -105,7 +136,8 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 # DATABASE_PASSWORD
 
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+# DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+DEFAULT_FILE_STORAGE = 'tenant_schemas.storage.TenantFileSystemStorage'
 GS_BUCKET_NAME = 'sebrae-agro-2020-django'
 
 AUTH_PASSWORD_VALIDATORS = [
