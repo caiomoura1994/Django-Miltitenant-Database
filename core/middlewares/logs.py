@@ -1,3 +1,5 @@
+import logging
+
 from django.db import connection
 
 
@@ -7,6 +9,8 @@ class LogTenantMiddleware:
 
     def __call__(self, request):
         response = self.get_response(request)
-        print(
-            f"From Tenant: {connection.tenant.schema_name} | {getattr(connection.tenant, 'domain_url', '')}")
+        logging.log(
+            msg=f"From Tenant: {connection.tenant.schema_name} | {getattr(connection.tenant, 'domain_url', '')}",
+            level=20
+        )
         return response
