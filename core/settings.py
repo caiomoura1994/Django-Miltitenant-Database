@@ -52,20 +52,20 @@ THIRD_APPS = [
     'tinymce'
 ]
 
+COMOM_APPS = DJANGO_APPS + THIRD_APPS
+SHARED_APPS = ["django_tenants", "customers"] + COMOM_APPS
+TENANT_APPS = PROJECTS_APPS + COMOM_APPS
+INSTALLED_APPS = list(SHARED_APPS) + \
+    [app for app in TENANT_APPS if app not in SHARED_APPS]
 
-TENANT_APPS = THIRD_APPS + DJANGO_APPS + PROJECTS_APPS
-SHARED_APPS = ["tenant_schemas", "customers"]
 
-INSTALLED_APPS = SHARED_APPS+TENANT_APPS
+print('INSTALLED_APPS:', INSTALLED_APPS)
 
-MULTITENANT_TEMPLATE_DIRS = [
-    'tenant_templates'
-]
-
-TENANT_MODEL = "customers.Client"  # app.Model
+TENANT_MODEL = "customers.Client"
+TENANT_DOMAIN_MODEL = "customers.Domain"
 
 MIDDLEWARE = [
-    'tenant_schemas.middleware.TenantMiddleware',
+    'django_tenants.middleware.main.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -86,24 +86,14 @@ TEMPLATES = [
         'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.template.context_processors.debug',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-            ],
-            "loaders": [
-                "tenant_schemas.template_loaders.FilesystemLoader",
-                "django.template.loaders.app_directories.Loader",
             ],
         },
     },
 ]
-
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.request',
-    # ...
-)
 
 
 WSGI_APPLICATION = 'core.wsgi.application'
@@ -115,7 +105,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         # "ENGINE": "django.db.backends.postgresql",
-        "ENGINE": "tenant_schemas.postgresql_backend",
+        "ENGINE": "django_tenants.postgresql_backend",
         'HOST': os.getenv('DATABASE_HOST'),
         'PORT': os.getenv('DATABASE_PORT'),
         'USER': os.getenv('DATABASE_USER'),
@@ -125,7 +115,7 @@ DATABASES = {
 }
 
 DATABASE_ROUTERS = (
-    'tenant_schemas.routers.TenantSyncRouter',
+    'django_tenants.routers.TenantSyncRouter',
 )
 # DATABASES = {
 #     'default': {
@@ -138,7 +128,31 @@ DATABASE_ROUTERS = (
 # DATABASE_PASSWORD
 
 # DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-DEFAULT_FILE_STORAGE = 'tenant_schemas.storage.TenantFileSystemStorage'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
+}
+
+DEFAULT_FILE_STORAGE = "django_tenants.files.storage.TenantFileSystemStorage"
 GS_BUCKET_NAME = 'sebrae-agro-2020-django'
 
 AUTH_PASSWORD_VALIDATORS = [

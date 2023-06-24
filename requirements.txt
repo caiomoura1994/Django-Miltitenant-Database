@@ -12,4 +12,4 @@ django-storages
 Pillow
 coverage
 coreapi
-django-tenant-schemas
+django-tenants
