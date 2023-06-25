@@ -4,8 +4,8 @@ from django_tenants.models import DomainMixin, TenantMixin
 
 class Client(TenantMixin):
     name = models.CharField(max_length=100)
-    paid_until = models.DateField()
-    on_trial = models.BooleanField()
+    paid_until = models.DateField(blank=True, default=None, null=True)
+    on_trial = models.BooleanField(default=False)
     created_on = models.DateField(auto_now_add=True)
 
     # default true, schema will be automatically created and synced when it is saved
