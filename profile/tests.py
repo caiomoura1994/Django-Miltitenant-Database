@@ -2,8 +2,9 @@ import json
 from profile.models import Profile
 from unittest.mock import patch
 
-from core.test_setup import InitCreateUser
 from rest_framework import status
+
+from core.test_setup import InitCreateUser
 from store.models import Store
 
 
@@ -22,18 +23,20 @@ class ProfileAccount(InitCreateUser):
                 "can_pick_up_in_store": True
             }
         }
-        response = self.client.post(
+        response = self.tenant_client.post(
             "/profile/",
             data=payload,
-            format="json"
+            format="json",
+            content_type="application/json"
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertContains(response=response, text="token", status_code=201)
 
-        response = self.client.post(
+        response = self.tenant_client.post(
             "/profile/",
             data=payload,
-            format="json"
+            format="json",
+            content_type="application/json"
         )
         self.assertContains(response=response, text="", status_code=400)
 
@@ -47,11 +50,12 @@ class ProfileAccount(InitCreateUser):
                 "description": "description",
             },
         }
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
-        response = self.client.patch(
+        self.tenant_client.force_authenticate(self.user, self.token)
+        response = self.tenant_client.patch(
             f"/profile/{self.profile_instance.pk}/",
             data=payload,
-            format="json"
+            format="json",
+            content_type="application/json"
         )
         profile: Profile = Profile.objects.get(pk=self.profile_instance.pk)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -59,19 +63,19 @@ class ProfileAccount(InitCreateUser):
         self.assertEqual(profile.tax_document, "0230824455")
 
     def test_get_my_profile(self):
-        response_without_auth = self.client.get("/my-profile/")
+        response_without_auth = self.tenant_client.get("/my-profile/")
         self.assertContains(
             response=response_without_auth,
             text="",
             status_code=status.HTTP_204_NO_CONTENT
         )
 
-        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
-        response = self.client.get("/my-profile/")
+        self.tenant_client.force_authenticate(self.user, self.token)
+        response = self.tenant_client.get("/my-profile/")
         self.assertContains(response=response, text="id")
 
     def test_login(self):
-        response = self.client.post(
+        response = self.tenant_client.post(
             "/api-token-auth/",
             data={
                 "username": "melquiades@gmail.com",
@@ -90,7 +94,7 @@ class ProfileAccount(InitCreateUser):
             "message": "message"
         })
         send_user_support_message.return_value = True
-        response = self.client.post(
+        response = self.tenant_client.post(
             "/contact-us/",
             data=data,
             content_type="application/json"
@@ -102,7 +106,7 @@ class ProfileAccount(InitCreateUser):
         )
 
         send_user_support_message.return_value = False
-        response = self.client.post(
+        response = self.tenant_client.post(
             "/contact-us/",
             data=data,
             content_type="application/json"
@@ -110,11 +114,11 @@ class ProfileAccount(InitCreateUser):
         self.assertContains(
             response=response,
             text="",
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE
         )
 
     def test_check_user_name(self):
-        response = self.client.post(
+        response = self.tenant_client.post(
             "/check-username/",
             data={"email": "naoexiste@gmail.com"}
         )
@@ -123,7 +127,7 @@ class ProfileAccount(InitCreateUser):
             text="",
             status_code=status.HTTP_404_NOT_FOUND
         )
-        response = self.client.post(
+        response = self.tenant_client.post(
             "/check-username/",
             data={"email": "melquiades@gmail.com"}
         )
@@ -132,7 +136,7 @@ class ProfileAccount(InitCreateUser):
             text="",
             status_code=status.HTTP_200_OK
         )
-        response = self.client.post("/check-username/", data={})
+        response = self.tenant_client.post("/check-username/", data={})
         self.assertContains(
             response=response,
             text="",
