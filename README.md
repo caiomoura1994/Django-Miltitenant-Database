@@ -1,8 +1,7 @@
-## Test Talk Project (Backend)
-- It is a simple project to teach, how to create tests using Django Rest
+## Multi Tenant Django Project (Backend)
+- It is a simple project to teach, how to create Multi tenant config
 
 # Runing the project
-  - Add the file `core/firebase-credentials.json` to use googleStorage config
   - To Up the containers use docker and run `docker-compose up -d`
   - Your project should be running at `http://0.0.0.0:8080/`
 
@@ -11,3 +10,10 @@
 
 # Run Tests
   - To run tests use `docker-compose exec web pythonn manage.py test -v 2`
+
+# Handle with Migrations in schemas
+  - To run Migrations in all schemas use `docker-compose exec web python manage.py migrate_schemas`
+  - Use `--shared` to execute only in apps declarede here -> `SHARED_APPS`
+  - Create Super user in any tenant `docker-compose exec web python manage.py tenant_command createsuperuser`
+
+

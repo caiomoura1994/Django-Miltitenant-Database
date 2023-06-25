@@ -11,6 +11,7 @@ from rest_framework.exceptions import NotFound
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ValidationError
+
 from store.models import Store
 
 from .serializers import (CheckUsernameProfileSerializer, ProfileSerializer,
@@ -48,7 +49,7 @@ def send_support_message(request):
     if ret:
         return Response(status=status.HTTP_204_NO_CONTENT)
     else:
-        return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
 class CustomAuthToken(ObtainAuthToken):

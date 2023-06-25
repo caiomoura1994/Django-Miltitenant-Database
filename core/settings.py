@@ -29,27 +29,39 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
-
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'storages',
+]
 
-    'rest_framework',
-    'rest_framework.authtoken',
-    'corsheaders',
-    'tinymce',
-
+PROJECTS_APPS = [
     'profile',
-    'integrations',
     'store',
 ]
 
+THIRD_APPS = [
+    'storages',
+    'rest_framework',
+    'rest_framework.authtoken',
+    'corsheaders',
+    'tinymce'
+]
+
+COMOM_APPS = DJANGO_APPS + THIRD_APPS
+SHARED_APPS = ["django_tenants", "customers"] + COMOM_APPS
+TENANT_APPS = PROJECTS_APPS + COMOM_APPS
+INSTALLED_APPS = list(SHARED_APPS) + \
+    [app for app in TENANT_APPS if app not in SHARED_APPS]
+
+TENANT_MODEL = "customers.Client"
+TENANT_DOMAIN_MODEL = "customers.Domain"
+
 MIDDLEWARE = [
+    'django_tenants.middleware.main.TenantMainMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
@@ -58,6 +70,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "core.middlewares.logs.LogTenantMiddleware",
 ]
 
 ROOT_URLCONF = 'core.urls'
@@ -66,17 +79,18 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
-        'APP_DIRS': True,
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
-                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
+                'django.template.context_processors.debug',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
@@ -86,7 +100,8 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 DATABASES = {
     'default': {
-        "ENGINE": "django.db.backends.postgresql",
+        # "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django_tenants.postgresql_backend",
         'HOST': os.getenv('DATABASE_HOST'),
         'PORT': os.getenv('DATABASE_PORT'),
         'USER': os.getenv('DATABASE_USER'),
@@ -95,6 +110,9 @@ DATABASES = {
     }
 }
 
+DATABASE_ROUTERS = (
+    'django_tenants.routers.TenantSyncRouter',
+)
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
@@ -105,7 +123,32 @@ DATABASES = {
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
 # DATABASE_PASSWORD
 
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+# DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {
+            '()': 'django.utils.log.RequireDebugFalse'
+        }
+    },
+    'handlers': {
+        'mail_admins': {
+            'level': 'ERROR',
+            'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['mail_admins'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
+    }
+}
+
+DEFAULT_FILE_STORAGE = "django_tenants.files.storage.TenantFileSystemStorage"
 GS_BUCKET_NAME = 'sebrae-agro-2020-django'
 
 AUTH_PASSWORD_VALIDATORS = [
