@@ -38,7 +38,6 @@ DJANGO_APPS = [
     'django.contrib.staticfiles',
 ]
 
-# web_1  | RuntimeError: Model class django.contrib.contenttypes.models.ContentType doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
 PROJECTS_APPS = [
     'profile',
     'store',
@@ -57,9 +56,6 @@ SHARED_APPS = ["django_tenants", "customers"] + COMOM_APPS
 TENANT_APPS = PROJECTS_APPS + COMOM_APPS
 INSTALLED_APPS = list(SHARED_APPS) + \
     [app for app in TENANT_APPS if app not in SHARED_APPS]
-
-
-print('INSTALLED_APPS:', INSTALLED_APPS)
 
 TENANT_MODEL = "customers.Client"
 TENANT_DOMAIN_MODEL = "customers.Domain"
