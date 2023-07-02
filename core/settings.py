@@ -48,12 +48,12 @@ THIRD_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'tinymce'
 ]
+PUBLIC_APPS = ["django_tenants", "customers", "subscriptions"]
 
-COMOM_APPS = DJANGO_APPS + THIRD_APPS
-SHARED_APPS = ["django_tenants", "customers"] + COMOM_APPS
-TENANT_APPS = PROJECTS_APPS + COMOM_APPS
+SHARED_APPS = PUBLIC_APPS + DJANGO_APPS + THIRD_APPS
+TENANT_APPS = PROJECTS_APPS + DJANGO_APPS + THIRD_APPS
+
 INSTALLED_APPS = list(SHARED_APPS) + \
     [app for app in TENANT_APPS if app not in SHARED_APPS]
 
@@ -78,8 +78,10 @@ ROOT_URLCONF = 'core.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': False,
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates')
+        ],
+        'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.request',
@@ -188,8 +190,8 @@ LOCALE_NAME = 'pt_BR'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-    "static/css/admin-extra.css",
+    # os.path.join(BASE_DIR, 'staticfiles'),
+    # "staticfiles/admin/css/admin-extra.css",
 )
 
 
