@@ -16,4 +16,10 @@
   - Use `--shared` to execute only in apps declared here -> `SHARED_APPS`
   - Create Super user in any tenant `docker-compose exec web python manage.py tenant_command createsuperuser`
 
+# Stripe
+  - Fill env_DEV with `STRIPE_API_KEY` and `STRIPE_CLI_SECRET` environments and run `docker-compose -f docker-compose.dev.yml up -d`
+  - Add stripe container `docker-compose -f docker-compose.dev.yml up -d`
+  - To run webhooks `docker exec -it $(docker ps | grep stripe | awk '{print $1}') stripe trigger payment_intent.succeeded --api-key $STRIPE_API_KEY`
 
+# Adminer container
+  - Can you use `Adminer` to see all details in your database

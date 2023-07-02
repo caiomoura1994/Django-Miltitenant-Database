@@ -12,3 +12,4 @@ Pillow
 coverage
 coreapi
 django-tenants
+stripe

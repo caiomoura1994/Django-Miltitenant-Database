@@ -19,7 +19,3 @@ services:
     ports:
       - "8000:8000"
       - "3500:3500"
-    depends_on:
-      - "db"
-    links:
-      - db
