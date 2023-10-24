@@ -1,0 +1,58 @@
+name: Run Tests and Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Run Django Tests
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: postgres
+        env:
+          POSTGRES_PASSWORD: mypassword
+          POSTGRES_USER: myuser
+          POSTGRES_DB: core
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Build and Run Tests
+      run: |
+        docker-compose up -d --build
+        docker-compose run web python manage.py test
+
+    - name: Stop Docker Compose
+      run: docker-compose down
+
+  deploy:
+    name: Deploy to Production
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ needs.test.result == 'success' }}
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Deploy to Production
+      run: |
+        # TODO: Add deploy commands here
+        echo "Deploying ..."
+
+  notify:
+    name: Notify Discord
+    needs: test
+    runs-on: ubuntu-latest
+    if: ${{ needs.test.result == 'failure' }}
+
+    steps:
+    - name: Notify Discord
+      run: |
+        # TODO: Send Discord Message
+        echo "Fail Test! Send a message to Discord..."
